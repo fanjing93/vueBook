@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <span>{{ reversedText }}</span>
+    <span>总价：{{ prices }} </span>
+    <h1 v-if="show">当前时间： {{ date | formatDate }} </h1>
+    <button @click="handleClose">点击</button>
+    <input type="text" v-model="firstName" placeholder="姓">
+    <input type="text" v-model="lastName" placeholder="名">
+    <span>{{ fullName }}</span>
+    <my-component :name="fullName"></my-component>
+    <button @click="handleAdd(10)">+ 10</button>
+    <p>总数: {{ total }}</p>
+    <!--<calculation @increase="handleGetTotal" @reduce="handleGetTotal"></calculation>-->
+    <calculation v-model="total"></calculation>
+    <!--<button @click="handleReduce">-1</button>-->
+    <p ref="p">内容</p>
+    <!--<child-component ref="child"></child-component>-->
+    <child-component :count="count" ref="child"></child-component>
+    <my-list :books="books">
+        <template slot="book" scope="props">
+            <li>{{ props.bookName }}</li>
+        </template>
+        <li>默认插槽slot</li>
+    </my-list>
+    <child-component1 inline-template>
+        <div>
+            <h4>在父组件中定义子组件的模板</h4>
+            <p>{{ parent_message }}</p>
+            <p>{{ msg }}</p>
+        </div>
+    </child-component1>
+    <component :is="currentView"></component>
+    <button @click="handleChangeView('A')">comA</button>
+    <button @click="handleChangeView('B')">comB</button>
+    <button @click="handleChangeView('C')">comC</button>
+    <child-component2></child-component2>
+    <div v-test:msg.a.b="message"></div>
+</div>
+</body>
+<script src="./vue.js"></script>
+<script src="./index.js"></script>
+</html>

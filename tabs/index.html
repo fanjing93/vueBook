@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>标签页组件</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div id="app" v-cloak>
+    <tabs v-model="activeKey">
+        <pane label="标签一" name="1" :closable="closable">
+            <transition name="fade">
+                <p>标签一内容</p>
+            </transition>
+        </pane>
+        <pane label="标签二" name="2" :closable="closable">
+            <transition name="fade">
+                <p>标签二内容</p>
+            </transition>
+        </pane>
+        <pane label="标签三" name="3">
+            <transition name="fade">
+                <p>标签三内容</p>
+            </transition>
+        </pane>
+    </tabs>
+</div>
+</body>
+<script src="../vue.js"></script>
+<script src="./pane.js"></script>
+<script src="./tabs.js"></script>
+<script src="./index.js"></script>
+</html>

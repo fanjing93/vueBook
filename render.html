@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <div v-for="(item, index) in list">
+        <anchor :level="item.level" :title="item.title">{{ item.title }}</anchor>
+    </div>
+</div>
+</body>
+<script src="./vue.js"></script>
+<script>
+    Vue.component('anchor', {
+        props: {
+            level: {
+                type: Number,
+                required: true
+            },
+            title: {
+                type: String,
+                default: ''
+            }
+        },
+        render(createElement) {
+            return createElement(
+                `h${this.level}`,
+                [
+                    createElement(
+                        'a',
+                        {
+                            domProps: {
+                                href: `#${this.title}`
+                            }
+                        },
+                        this.$slots.default
+                    )
+                ]
+            )
+        }
+    });
+    new Vue({
+        el: '#app',
+        data: {
+            list: [
+                {level: 1, title: '特性1'},
+                {level: 2, title: '特性2'},
+                {level: 3, title: '特性3'},
+                {level: 4, title: '特性4'},
+                {level: 4, title: '特性4'},
+                {level: 5, title: '特性5'}
+            ]
+        }
+    })
+</script>
+</html>

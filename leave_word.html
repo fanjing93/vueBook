@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>实战： 留言列表</title>
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .container-form {
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .container-form > div {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .container-left {
+            width: 85px;
+            text-align: right;
+        }
+
+        .container-right {
+            flex: 1;
+        }
+
+        input.container-right {
+            height: 30px;
+            border: 1px solid #ccc;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            outline-style: none;
+        }
+
+        textarea.container-right {
+            max-height: 120px;
+            height: 60px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+        }
+
+        .container-form button {
+            width: 80px;
+            padding: 5px 0;
+            color: #21252A;
+            background-color: #36c0ff;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            border: none;
+            align-self: flex-end;
+            cursor: pointer;
+        }
+
+        .list {
+            margin-top: 50px;
+        }
+
+        .list-item {
+            padding: 10px;
+            border-bottom: 1px solid #e3e8ee;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .list-item span {
+            display: block;
+            width: auto;
+            color: #39f;
+            font-size: 12px;
+        }
+
+        .list-msg {
+            flex: 1;
+            display: flex;
+            margin-left: 10px;
+        }
+
+        .list-msg p {
+            flex: 1;
+        }
+
+        .list-msg > div {
+            width: auto;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .list-msg a {
+            color: #9ea7b4;
+            cursor: pointer;
+        }
+
+        .item-close{
+            cursor: pointer;
+        }
+
+        .list-msg a :hover {
+            color: #39f;
+        }
+
+        .list-nothing {
+            text-align: center;
+            color: #9ea7b4;
+            padding: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app" v-cloak>
+    <div class="message">
+        <div class="container-form">
+            <v-input v-model="username"></v-input>
+            <v-textarea v-model="message" ref="message"></v-textarea>
+            <button @click="handlePublish">发布</button>
+        </div>
+        <v-list :list="list" @reply="handleReply" @close="handleClose"></v-list>
+    </div>
+</div>
+</body>
+<script src="./vue.js"></script>
+<script>
+    Vue.component('v-list', {
+        props: {
+            list: {
+                type: Array,
+                required: true,
+                default() {
+                    return []
+                }
+            }
+        },
+        data() {
+            return {
+                currentList: this.list
+            }
+        },
+        methods: {
+            handleReply(index) {
+                this.$emit('reply', index);
+            },
+            handleClose(index) {
+                this.$emit('close', index);
+            }
+        },
+        render(h) {
+            let _this = this,
+                list = [];
+            this.currentList.map((item, index) => {
+                let node = h('li', {
+                    attrs: {
+                        class: 'list-item'
+                    }
+                }, [
+                    h('span', `${item.name}：`),
+                    h('div', {
+                        attrs: {
+                            class: 'list-msg'
+                        }
+                    }, [
+                        h('p', item.message),
+                        h('div', [
+                            h('a', {
+                                attrs: {
+                                    class: 'list-reply'
+                                },
+                                on: {
+                                    click() {
+                                        _this.handleReply(index);
+                                    }
+                                }
+                            }, '回复'),
+                            h('span', {
+                                attrs: {
+                                    class: 'item-close'
+                                },
+                                on: {
+                                    click() {
+                                        _this.handleClose(index);
+                                    }
+                                }
+                            }, 'X')
+                        ])
+                    ])
+                ]);
+                list.push(node);
+            });
+            return this.list.length > 0 ? h('ul', {
+                attrs: {
+                    class: 'list'
+                }
+            }, list) : h('div', {
+                attrs: {
+                    class: 'list-nothing'
+                }
+            }, '留言列表为空');
+        }
+    });
+    Vue.component('v-input', {
+        props: {
+            value: {
+                type: [String, Number],
+                default: ''
+            }
+        },
+        data() {
+            return {
+                currentUserName: this.value
+            }
+        },
+        render(h) {
+            let _this = this;
+            return h('div', [
+                h('span', {
+                    class: 'container-left'
+                }, '昵称：'),
+                h('input', {
+                    class: {
+                        'container-right': 'container-right'
+                    },
+                    attrs: {
+                        type: 'text',
+                        maxlength: 4
+                    },
+                    domProps: {
+                        value: this.currentUserName
+                    },
+                    on: {
+                        input(event) {
+                            _this.currentUserName = event.target.value;
+                            _this.$emit('input', event.target.value);
+                        }
+                    }
+                })
+            ])
+        }
+    });
+
+    Vue.component('v-textarea', {
+        props: {
+            value: {
+                type: [String, Number],
+                default: ''
+            }
+        },
+        data() {
+            return {
+                currentMessage: this.value
+            }
+        },
+        watch: {
+            value() {
+                this.currentMessage = this.value;
+            }
+        },
+        render(h) {
+            let _this = this;
+            return h('div', [
+                h('span', {
+                    class: 'container-left'
+                }, '留言内容：'),
+                h('textarea', {
+                    class: {
+                        'container-right': 'container-right'
+                    },
+                    domProps: {
+                        value: this.currentMessage,
+                        placeholder: '请输入留言内容'
+                    },
+                    ref: 'message',
+                    on: {
+                        input(event) {
+                            _this.currentMessage = event.target.value;
+                            _this.$emit('input', event.target.value);
+                        }
+                    }
+                })
+            ])
+        },
+        methods: {
+            focus() {
+                this.$refs.message.focus();
+            }
+        }
+    });
+
+    new Vue({
+        el: '#app',
+        data: {
+            username: '',
+            message: '',
+            list: []
+        },
+        methods: {
+            handlePublish() {
+                if (!this.username) {
+                    window.alert('请输入昵称');
+                    return;
+                }
+                if (!this.message) {
+                    window.alert('请输入留言内容');
+                    return;
+                }
+                this.list.push({
+                    name: this.username,
+                    message: this.message
+                });
+                this.message = '';
+            },
+            handleReply(index) {
+                let name = this.list[index]['name'] || '';
+                this.message = `回复@${name}：`;
+                this.$refs.message.focus();
+            },
+            handleClose(index) {
+                this.list.splice(index, 1);
+            }
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,5 @@
+node_modules/
+/demo/node_modules/
+/vue-book-cli/node_modules/
+/demo/dist/
+.idea/
